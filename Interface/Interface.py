@@ -69,3 +69,7 @@ botao2.pack(pady=50)
 
 # Inicia o loop principal da interface gráfica
 janela.mainloop()
+
+
+
+### https://www.youtube.com/watch?v=95tJO7XJlko Video que pode ajudar a divisão de paginas
