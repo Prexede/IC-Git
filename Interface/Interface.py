@@ -2,25 +2,61 @@ import tkinter as tk
 from tkinter import PhotoImage
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.animation import FuncAnimation
+import random
 
-
-def Graficos():
+def atualizar_grafico(i):
+    # Gera novos dados aleatórios para o gráfico
+    x_data.append(i)
+    y_data.append(random.randint(0, 10))
+    ax.clear()
+    ax.plot(x_data, y_data)
     
+def atualizar_grafico2(i):
+    # Gera novos dados aleatórios para o gráfico
+    x_data2.append(i)
+    y_data2.append(random.randint(0, 10))
+    ax2.clear()
+    ax2.plot(x_data2, y_data2)
+    
+def atualizar_grafico3(i):
+    # Gera novos dados aleatórios para o gráfico
+    x_data3.append(i)
+    y_data3.append(random.randint(0, 10))
+    ax3.clear()
+    ax3.plot(x_data3, y_data3)
+    
+def Graficos():
+    global canvas, ax, x_data, y_data, ax2, x_data2, y_data2, ax3, x_data3, y_data3
+    x_data, y_data = [], []
+    x_data2, y_data2 = [], []
+    x_data3, y_data3 = [], []
     # Cria um gráfico usando Matplotlib
-    fig = Figure(figsize=(5, 4), dpi=100)
-    plot = fig.add_subplot(1, 1, 1)
-    plot.plot([0, 1, 2, 3], [0, 1, 4, 9])  # Exemplo de dados para o gráfico
+    fig = Figure(figsize=(5, 5), dpi=100)
+    ax = fig.add_subplot(3, 1, 1)
+    ax2 = fig.add_subplot(3, 1, 2)
+    ax3 = fig.add_subplot(3, 1, 3)
 
     # Incorpora o gráfico na janela do Tkinter
     canvas = FigureCanvasTkAgg(fig, master=janela)  # A 'master' é a janela do Tkinter
     canvas.draw()
-    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-    
+    canvas.get_tk_widget().pack(side=tk.TOP,fill=tk.BOTH)
+    # Configura a animação
+    ani1 = FuncAnimation(fig, atualizar_grafico, interval=100)
+    ani2 = FuncAnimation(fig, atualizar_grafico2, interval=100)
+    ani3 = FuncAnimation(fig, atualizar_grafico3, interval=200)
+
+    canvas.draw()
     
 def Conexao():
-    grafico = Graficos.canvas.get_tk_widget()
-    grafico.destroy()
-
+    
+    ## Apaga os graficos 
+    global canvas
+    if canvas:
+        canvas.get_tk_widget().destroy()
+        canvas = None
+    
+    
 
 # Cria a janela principal
 janela = tk.Tk()
