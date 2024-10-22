@@ -59,6 +59,7 @@ def atualizar_grafico(i):
     ax.set_ylabel("Angulo[graus]")
     ax.grid(True)
     ax.set_title("Pitch")
+
     
     # GRAFICO 2
     ax2.clear()
@@ -88,7 +89,7 @@ def Graficos():
         return
     
     # Cria um gráfico usando Matplotlib
-    fig = Figure(figsize=(6, 6), dpi=100)
+    fig = Figure(figsize=(30, 40), dpi=50)
     ax = fig.add_subplot(3, 1, 1)
     ax2 = fig.add_subplot(3, 1, 2)
     ax3 = fig.add_subplot(3, 1, 3)
@@ -100,12 +101,11 @@ def Graficos():
     canvas = FigureCanvasTkAgg(fig, master=janela)  # A 'master' é a janela do Tkinter
     canvas.draw()
     canvas_widget = canvas.get_tk_widget()
-    canvas_widget.pack(side=tk.TOP)
+    canvas_widget.pack(anchor=tk.CENTER,expand=True)
     widgets_criados.append(canvas_widget)
     
     # Configura a animação
-    ani1 = FuncAnimation(fig, atualizar_grafico, interval=50,cache_frame_data=False)
-    
+    ani1 = FuncAnimation(fig, atualizar_grafico, interval=50, cache_frame_data=False)
     # Adiciona os botões de salvar
     global botao_salvar1
     botao_salvar1 = tk.Button(barra_lateral, text="Salvar Dados Gráfico 1", command=lambda: salvar_dados('grafico1.txt', x_data, y_data, x_data2, y_data2, x_data3, y_data3))
@@ -157,7 +157,7 @@ def Conexao():
         global serial_conn
         if porta_selecionada:
             try:
-                serial_conn = serial.Serial(porta_selecionada, 9600, timeout=0.1)
+                serial_conn = serial.Serial(porta_selecionada, 115200, timeout=0.0001)
                 texto_status.config(text=f"Conectado à {porta_selecionada}")
                 janela.after(100, ler_dados_serial)  # Chama a função para ler dados do serial
             except Exception as e:
@@ -200,7 +200,7 @@ label_fundo.place(x=0, y=0, relwidth=1, relheight=1)
 
 #########################################################################################################3
 # Cria um Frame3d para a barra lateral
-barra_lateral = tk.Frame(janela, width=100, height=300, bg='#5179AA')
+barra_lateral = tk.Frame(janela, width=100, height=200, bg='#5179AA')
 barra_lateral.pack(side='left', fill='none')  # Posiciona a barra lateral à esquerda
 
 # Adiciona botões à barra lateral
