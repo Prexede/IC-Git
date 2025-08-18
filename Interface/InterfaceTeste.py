@@ -173,7 +173,7 @@ altura = 720
 janela.geometry(f'{largura}x{altura}')
 
 # Carrega a imagem de fundo
-caminho_imagem = r'C:\Users\carlo\OneDrive\Documentos\Drive\Faculdade\IC\Interface\Background\FundoTelemetria.png'
+caminho_imagem = r'C:\Users\carlo\OneDrive\Documentos\Drive\Faculdade\IC\Interface\Background\Fundo.png'
 imagem_fundo = PhotoImage(file=caminho_imagem)
 
 # Redimensiona a imagem para cobrir toda a janela

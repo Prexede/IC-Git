@@ -7,7 +7,8 @@ from matplotlib.animation import FuncAnimation
 import random
 import matplotlib.pyplot as plt
 import serial.tools.list_ports
-
+random_data = -1
+global dados
 
 def resetar_dados():
     global x_data, y_data, x_data2, y_data2, x_data3, y_data3
@@ -22,7 +23,6 @@ def resetar_dados():
     ax3.clear()
     canvas.draw()
     
-
 def salvar_dados(nome_arquivo, x_data, y_data, x_data2, y_data2, x_data3, y_data3):
     with open(nome_arquivo, 'w') as f:
         f.write("\nGráfico 1:\n")
@@ -34,24 +34,30 @@ def salvar_dados(nome_arquivo, x_data, y_data, x_data2, y_data2, x_data3, y_data
         f.write("\nGráfico 3:\n")
         for x, y in zip(x_data3, y_data3):
             f.write(f"{x}\t{y}\n")
-            
-            
+
+def dados_random():
+    global random_data 
+    random_data = (-1)*random_data
+                
 def atualizar_grafico(i):
     global serial_conn
-    if serial_conn and serial_conn.is_open:
-        try:
-            dados = serial_conn.readline().decode('utf-8').strip()
-            if dados:
+    if random_data == 1:
+        valores = [random.uniform(-90, 90) for _ in range(3)]
+    else:
+        if serial_conn and serial_conn.is_open:
+            try:
+                dados = serial_conn.readline().decode('utf-8').strip()
                 valores = [float(val) for val in dados.split()]
-                if len(valores) == 3:
-                    x_data.append(i)
-                    y_data.append(valores[0])
-                    x_data2.append(i)
-                    y_data2.append(valores[1])
-                    x_data3.append(i)
-                    y_data3.append(valores[2])
-        except Exception as e:
-            print(f"Erro ao ler dados: {e}")
+            except Exception as e:
+                print(f"Erro ao ler dados: {e}")  
+    
+    if len(valores) == 3:
+        x_data.append(i)
+        y_data.append(valores[0])
+        x_data2.append(i)
+        y_data2.append(valores[1])
+        x_data3.append(i)
+        y_data3.append(valores[2])
     # GRAFICO 1
     ax.clear()
     ax.plot(x_data, y_data)
@@ -77,7 +83,6 @@ def atualizar_grafico(i):
     ax3.grid(True)
     ax3.set_title("Yaw")
     
-    
 def Graficos():
     global canvas, ax, x_data, y_data, ax2, x_data2, y_data2, ax3, x_data3, y_data3, widgets_criados,i
     x_data, y_data = [], []
@@ -89,7 +94,7 @@ def Graficos():
         return
     
     # Cria um gráfico usando Matplotlib
-    fig = Figure(figsize=(30, 40), dpi=50)
+    fig = Figure(figsize=(20, 40), dpi=50)
     ax = fig.add_subplot(3, 1, 1)
     ax2 = fig.add_subplot(3, 1, 2)
     ax3 = fig.add_subplot(3, 1, 3)
@@ -109,15 +114,20 @@ def Graficos():
     # Adiciona os botões de salvar
     global botao_salvar1
     botao_salvar1 = tk.Button(barra_lateral, text="Salvar Dados Gráfico 1", command=lambda: salvar_dados('grafico1.txt', x_data, y_data, x_data2, y_data2, x_data3, y_data3))
-    botao_salvar1.pack(side=tk.LEFT, padx=10, pady=10)
+    botao_salvar1.pack(side=tk.TOP, padx=10, pady=10)
     widgets_criados.append(botao_salvar1)
-    
     
     # Adiciona os botões de Resetar grafico
     global botao_Reset
     botao_Reset = tk.Button(barra_lateral, text="Resetar dados", command=resetar_dados)
-    botao_Reset.pack(side=tk.LEFT, padx=10, pady=10)
+    botao_Reset.pack(side=tk.TOP, padx=10, pady=10)
     widgets_criados.append(botao_Reset)
+    
+    # Adiciona o botão de adicionar dados fakes
+    global data_random
+    data_random = tk.Button(barra_lateral, text="Dados Aleatórios", command=dados_random)
+    data_random.pack(side=tk.TOP, padx=10, pady=10)
+    widgets_criados.append(data_random)
     
     canvas.draw()
 
@@ -159,7 +169,7 @@ def Conexao():
             try:
                 serial_conn = serial.Serial(porta_selecionada, 115200, timeout=0.0001)
                 texto_status.config(text=f"Conectado à {porta_selecionada}")
-                janela.after(100, ler_dados_serial)  # Chama a função para ler dados do serial
+                janela.after(50, ler_dados_serial)  # Chama a função para ler dados do serial
             except Exception as e:
                 texto_status.config(text=f"Erro: {e}")
         else:
@@ -168,12 +178,12 @@ def Conexao():
         global serial_conn
         if serial_conn and serial_conn.is_open:
             try:
-                dados = serial_conn.readline().decode('utf-8').strip()
+                #dados = serial_conn.readline().decode('utf-8').strip()
                 if dados:
                     label_dados.config(text=f"Dados do Serial: {dados}")
             except Exception as e:
                 label_dados.config(text=f"Erro ao ler dados: {e}")
-        janela.after(100, ler_dados_serial)  # Chama a função novamente após 1 segundo
+        #janela.after(50, ler_dados_serial)  # Chama a função novamente após 1 segundo
         
         
 
@@ -188,7 +198,7 @@ altura = 1080
 janela.geometry(f'{largura}x{altura}')
 
 # Carrega a imagem de fundo
-caminho_imagem = r'C:\Users\carlo\OneDrive\Documentos\Drive\Faculdade\IC\Interface\Background\FundoTelemetria.png'
+caminho_imagem = r'C:\Users\carlo\OneDrive\Documentos\Drive\Faculdade\IC\Interface\Background\Fundo.png'
 imagem_fundo = PhotoImage(file=caminho_imagem)
 
 # Redimensiona a imagem para cobrir toda a janela
@@ -198,7 +208,7 @@ label_fundo = tk.Label(janela, image=imagem_fundo)
 label_fundo.place(x=0, y=0, relwidth=1, relheight=1)
 
 
-#########################################################################################################3
+#########################################################################################################
 # Cria um Frame3d para a barra lateral
 barra_lateral = tk.Frame(janela, width=100, height=200, bg='#5179AA')
 barra_lateral.pack(side='left', fill='none')  # Posiciona a barra lateral à esquerda
